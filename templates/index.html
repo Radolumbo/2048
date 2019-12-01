@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>2048</title>
+    
+    <link href="/static/main.css" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="meta/apple-touch-icon.png">
+    <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x1096.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone 5+ -->
+    <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x920.png"  media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone, retina -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+    <div class="container">
+        <div class="heading">
+            <h1 class="title">FFF (2048)</h1>
+            <div class="scores-container">
+                <div class="score-container">0</div>
+                <div class="best-container">0</div>
+            </div>
+        </div>
+        
+        <div class="above-game">
+            <p class="game-intro">Funny Furry Face :)</p>
+            <a class="restart-button">New Game</a>
+        </div>
+        
+        <div class="game-container">
+            <div class="game-message">
+                <p></p>
+                <div class="lower">
+                    <a class="keep-playing-button">Keep going</a>
+                    <a class="retry-button">Try again</a>
+                </div>
+            </div>
+            
+            <div class="grid-container">
+                <div class="grid-row">
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                </div>
+                <div class="grid-row">
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                </div>
+                <div class="grid-row">
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                </div>
+                <div class="grid-row">
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                </div>
+            </div>
+            
+            <div class="tile-container">
+                
+            </div>
+        </div>
+        
+        <p class="game-explanation">
+            <strong class="important">How to play:</strong> Use your <strong>arrow keys</strong> to move the tiles. When two tiles with the same face touch, they <strong>merge into one!</strong>
+        </p>
+        <hr>
+        <p>
+            Game engine stolen shamelessly from <a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a>
+        </p>
+        <hr>
+        <p>
+            <h1 style='text-align: center;'>Leaderboard</h1>
+            <table id="leaderboard" style="width:100%">
+            <tr>
+                <th>Name</th>
+                <th>Score</th>
+            </tr>
+            </table>
+        </p>
+    </div>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+    <script src="/static/js/socket.js"></script> 
+    <script>
+        userName = "Anonymous";
+
+        blockInput = true;
+
+        let createModal = (modalContent) => {
+            // Definitions
+            let modal = document.createElement("div"),
+            //modalClose = '<button class="js-modal-close" id="js_modal_close">X</button>',
+            theBody = document.getElementsByTagName('body')[0],
+            theHead = document.getElementsByTagName('head')[0];
+            
+            // Add content and attributes to the modal
+            modal.setAttribute("class", "js-modal");
+            modal.innerHTML = '<div class="js-modal-inner">' + modalContent /*+ modalClose*/ + '</div>';
+            theBody.appendChild(modal);
+            
+            //modalClose = document.querySelector("#js_modal_close");
+           
+            
+            // Close the modal on button-click
+            /*if(modalClose) {
+                modalClose.addEventListener('click', function() {
+                    modal.remove();
+                });
+            }*/
+        }
+        function submitName(){
+            blockInput = false;
+            userName = document.getElementById('name_box').value;
+            if(userName.length < 1)
+            {
+                userName = "Anonymous";
+            }
+            document.getElementsByClassName("js-modal")[0].remove();
+        }
+        // Show it up when loading starts
+        window.addEventListener('load', function() {
+            /* Remember to escape the characters to their respective valid
+            HTML entities, for eg. ' will become \' */
+            createModal('Name: <input type="text" id="name_box" name="username"><br><input type="submit" onclick="submitName()" style="float: right;">');
+        });
+
+        SocketInstance().on('leaderboard', (data) => {
+            document.getElementById('leaderboard').innerHTML = "<tr><th>Name</th><th>Score</th></tr>" + data;
+        });
+    </script>
+    <script src="/static/js/bind_polyfill.js"></script>
+    <script src="/static/js/classlist_polyfill.js"></script>
+    <script src="/static/js/animframe_polyfill.js"></script>
+    <script src="/static/js/keyboard_input_manager.js"></script>
+    <script src="/static/js/html_actuator.js"></script>
+    <script src="/static/js/grid.js"></script>
+    <script src="/static/js/tile.js"></script>
+    <script src="/static/js/local_storage_manager.js"></script>
+    <script src="/static/js/game_manager.js"></script>
+    <script src="/static/js/application.js"></script>
+</body>
+</html>
